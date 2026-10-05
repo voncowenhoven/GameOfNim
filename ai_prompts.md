@@ -1,0 +1,3 @@
+protocol_blueprint is the heart of the project and where agents should consult in case there are questions, issues, or new features that need to be added. It should be rigorously adhered to for the message format and all other activities it covers.
+
+Comments should explain WHY, not HOW a piece of code is done. Do not use a conversational tone or em-dashes. Only comment if it is absolutely needed, such as JavaDocs, big functions, etc. For single-line comments, do not exceed about 20 words or break the 80-column rule. Keep well below the limit.
