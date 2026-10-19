@@ -81,13 +81,13 @@ The following state is owned by worker threads privately:
 Only sends will be shared so players can write game state to each other's sockets. Every send happens inside worldLock, so two threads never write to the same socket at the same time and messages on the wire are never interleaved.
 
 # Score and Leaderboard Synchronization
-Scores are stored in server memory as a single dictionary, scores = {"PLAYER_1": int, "PLAYER_2": int}, counting rounds won in the current match. It is one of the shared variables guarded by worldLock, and it is only modified inside a critical section:
+Scores are stored in server memory as a simple dictionary, scores = {"PLAYER_1": int, "PLAYER_2": int}, counting rounds won in the current match. It is one of the shared variables guarded by worldLock, and it is only modified inside a critical section:
 - When a legal MOVE takes the last stone, the mover's score is incremented in the same critical section as the move.
 - On a forfeit, the remaining player is reported as the winner in GAME_OVER.
 - When both players accept a REMATCH, the stacks are reset (or randomized with --random), the first mover alternates, and scores carry over.
 - When a match ends (a REMATCH decline or a disconnect), scores are reset to zero during CLEANUP so the next pair of players starts fresh.
 
-Clients never keep their own score. Every STATE_UPDATE and every GAME_OVER includes the full scores object, so the leaderboard on each client is always the server's copy. When a round ends, the server broadcasts STATE_UPDATE (final board, active_player null) and then GAME_OVER (winner, reason, scores, rematch_available) to both clients inside the same critical section as the score increment, so both clients receive the updated scores before any other message is processed.
+Clients never keep their own score. Every STATE_UPDATE and every GAME_OVER includes the full scores object, so the leaderboard on each client is always the server's copy. When a round ends, the server broadcasts STATE_UPDATE (final board, activePlayer null) and then GAME_OVER (winner, reason, scores, rematchAvailable) to both clients inside the same critical section as the score increment, so both clients receive the updated scores before any other message is processed.
 
 # Sequence Diagrams
 
